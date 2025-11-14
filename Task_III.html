@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Temperature Converter</title>
+  <style>
+    :root{
+      --bg1:#0f172a; /* deep navy */
+      --bg2:#071129; /* darker */
+      --card:#0b1220;
+      --accent:#60a5fa; /* soft blue */
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.02);
+      --muted: #9aa7bf;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      background: radial-gradient(800px 400px at 10% 20%, rgba(96,165,250,0.08), transparent),
+                  radial-gradient(600px 300px at 90% 80%, rgba(99,102,241,0.06), transparent),
+                  linear-gradient(130deg,var(--bg1), var(--bg2));
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;align-items:center;justify-content:center;padding:32px;
+    }
+
+    .container{
+      width:100%;max-width:920px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border-radius:16px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6);backdrop-filter: blur(6px);
+      display:grid;grid-template-columns: 1fr 360px;gap:20px;align-items:center;
+    }
+
+    .hero{
+      padding:16px 20px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), var(--glass));
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    h1{margin:0 0 8px;font-size:22px;letter-spacing:0.2px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    .controls{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap}
+    .field{background:var(--glass);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);display:flex;gap:10px;align-items:center}
+
+    input[type="number"],select{
+      background:transparent;border:none;outline:none;color:inherit;font-size:16px;width:100%;
+    }
+
+    .big-input{font-size:30px;font-weight:600}
+
+    .btn{
+      background: linear-gradient(90deg, rgba(96,165,250,0.14), rgba(99,102,241,0.12));
+      padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);cursor:pointer;font-weight:600;color:var(--accent);
+      transition:transform .12s ease, box-shadow .12s ease;
+    }
+    .btn:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(2,6,23,0.6)}
+
+    .right-card{background:linear-gradient(180deg,var(--card), rgba(11,18,32,0.98));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .result{font-size:42px;font-weight:700;margin:6px 0}
+    .muted{color:var(--muted);font-size:13px}
+
+    .extras{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+    .tag{padding:6px 8px;border-radius:999px;background:var(--glass-2);border:1px solid rgba(255,255,255,0.02);font-size:13px}
+
+    .footer{margin-top:18px;color:var(--muted);font-size:13px}
+
+    /* responsive */
+    @media (max-width:880px){
+      .container{grid-template-columns:1fr;}
+      .right-card{order:-1}
+    }
+
+    /* small micro-interaction */
+    .swap{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;cursor:pointer}
+    .swap svg{width:18px;height:18px}
+
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <h1>Temperature Converter</h1>
+      <p class="lead">Convert instantly between Celsius, Fahrenheit, Kelvin and Rankine. Type a value, pick units and get precise results.</p>
+
+      <div class="controls">
+        <div style="flex:1;min-width:220px" class="field">
+          <input id="valueIn" type="number" step="any" placeholder="Enter temperature" class="big-input" />
+          <select id="unitIn">
+            <option value="C">°C — Celsius</option>
+            <option value="F">°F — Fahrenheit</option>
+            <option value="K">K — Kelvin</option>
+            <option value="R">°R — Rankine</option>
+          </select>
+        </div>
+
+        <button title="Swap units" class="swap" id="swapBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 1l4 4-4 4"/>
+            <path d="M21 5H7a4 4 0 0 0-4 4v10"/>
+            <path d="M7 23l-4-4 4-4"/>
+            <path d="M3 19h14a4 4 0 0 0 4-4V5"/>
+          </svg>
+        </button>
+
+        <div style="flex:1;min-width:220px" class="field">
+          <input id="valueOut" type="text" placeholder="Result" readonly />
+          <select id="unitOut">
+            <option value="F">°F — Fahrenheit</option>
+            <option value="C">°C — Celsius</option>
+            <option value="K">K — Kelvin</option>
+            <option value="R">°R — Rankine</option>
+          </select>
+        </div>
+
+        <button id="clearBtn" class="btn">Clear</button>
+      </div>
+
+      <div class="footer">Pro-tip: you can press Enter to convert. Results update automatically while typing.</div>
+    </section>
+
+    <aside class="right-card">
+      <div class="muted">Result</div>
+      <div class="result" id="display">—</div>
+      <div class="muted" id="fromTo">—</div>
+
+      <div class="extras">
+        <button id="copyBtn" class="btn">Copy</button>
+        <button id="roundBtn" class="btn">Toggle rounding</button>
+        <div class="tag" id="precisionTag">Precision: 4 dec</div>
+      </div>
+
+      <div style="margin-top:14px">
+        <div class="muted">Quick presets</div>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <button class="tag preset">0 °C</button>
+          <button class="tag preset">100 °C</button>
+          <button class="tag preset">32 °F</button>
+          <button class="tag preset">273.15 K</button>
+        </div>
+      </div>
+
+      <div style="margin-top:14px">
+        <div class="muted">About</div>
+        <div class="muted" style="margin-top:6px;font-size:13px">Conversions use exact formulas. Kelvin and Rankine are absolute temperature scales.</div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    // helpers: convert input -> kelvin, kelvin -> others
+    function toKelvin(value, unit){
+      const v = Number(value);
+      if (!isFinite(v)) return NaN;
+      switch(unit){
+        case 'C': return v + 273.15;
+        case 'F': return (v + 459.67) * 5/9;
+        case 'K': return v;
+        case 'R': return v * 5/9;
+        default: return NaN;
+      }
+    }
+
+    function fromKelvin(k, unit){
+      if (!isFinite(k)) return NaN;
+      switch(unit){
+        case 'C': return k - 273.15;
+        case 'F': return k * 9/5 - 459.67;
+        case 'K': return k;
+        case 'R': return k * 9/5;
+        default: return NaN;
+      }
+    }
+
+    // UI
+    const valueIn = document.getElementById('valueIn');
+    const unitIn = document.getElementById('unitIn');
+    const unitOut = document.getElementById('unitOut');
+    const valueOut = document.getElementById('valueOut');
+    const display = document.getElementById('display');
+    const fromTo = document.getElementById('fromTo');
+    const swapBtn = document.getElementById('swapBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const roundBtn = document.getElementById('roundBtn');
+    const precisionTag = document.getElementById('precisionTag');
+
+    let precision = 4;
+    let rounding = true;
+
+    function formatNumber(n){
+      if (!isFinite(n)) return '—';
+      return rounding ? Number(n).toFixed(precision) : String(n);
+    }
+
+    function convert(){
+      const v = valueIn.value.trim();
+      if (v === ''){
+        valueOut.value = '';
+        display.textContent = '—';
+        fromTo.textContent = '—';
+        return;
+      }
+      const k = toKelvin(v, unitIn.value);
+      const result = fromKelvin(k, unitOut.value);
+      const formatted = formatNumber(result);
+      valueOut.value = formatted;
+      display.textContent = formatted + ' ' + unitSymbol(unitOut.value);
+      fromTo.textContent = `${v} ${unitSymbol(unitIn.value)} → ${formatted} ${unitSymbol(unitOut.value)}`;
+    }
+
+    function unitSymbol(u){
+      switch(u){
+        case 'C': return '°C';
+        case 'F': return '°F';
+        case 'K': return 'K';
+        case 'R': return '°R';
+      }
+    }
+
+    // events
+    valueIn.addEventListener('input', convert);
+    unitIn.addEventListener('change', convert);
+    unitOut.addEventListener('change', convert);
+
+    swapBtn.addEventListener('click', ()=>{
+      const a = unitIn.value, b = unitOut.value;
+      unitIn.value = b; unitOut.value = a;
+      // swap display values
+      const vin = valueIn.value; const vout = valueOut.value;
+      valueIn.value = vout || vin; // prefer existing result
+      valueOut.value = vin || vout;
+      convert();
+    });
+
+    clearBtn.addEventListener('click', ()=>{
+      valueIn.value = '';
+      valueOut.value = '';
+      display.textContent = '—';
+      fromTo.textContent = '—';
+    });
+
+    copyBtn.addEventListener('click', async ()=>{
+      const text = valueOut.value || display.textContent;
+      try{
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(()=> copyBtn.textContent = 'Copy', 1200);
+      }catch(e){
+        alert('Copy failed — please select and copy manually.');
+      }
+    });
+
+    roundBtn.addEventListener('click', ()=>{
+      rounding = !rounding;
+      roundBtn.textContent = rounding ? 'Toggle rounding' : 'Toggle rounding';
+      precisionTag.textContent = rounding ? `Precision: ${precision} dec` : 'Precision: full';
+      convert();
+    });
+
+    // quick presets
+    document.querySelectorAll('.preset').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const txt = btn.textContent.trim();
+        // parse value and unit from label
+        const parts = txt.split(' ');
+        valueIn.value = parts[0];
+        const unitLabel = parts[1] || '°C';
+        // choose target unit based on label
+        if (unitLabel.includes('C')) unitIn.value = 'C';
+        else if (unitLabel.includes('F')) unitIn.value = 'F';
+        else if (unitLabel.includes('K')) unitIn.value = 'K';
+        else if (unitLabel.includes('R')) unitIn.value = 'R';
+        convert();
+      });
+    });
+
+    // enter key converts
+    valueIn.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') convert(); });
+
+    // initial
+    convert();
+  </script>
+</body>
+</html>
